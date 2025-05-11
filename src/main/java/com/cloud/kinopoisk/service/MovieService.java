@@ -108,11 +108,13 @@ public class MovieService {
     }
 
     @Transactional
-    public void handleAddMovie(AddMovie addMovie, String posterUrl) {
+    public Movie handleAddMovie(AddMovie addMovie, String posterUrl) {
         MovieEntity movie = movieMapper.addMovieToEntity(addMovie);
 
         movie.setPosterUrl(posterUrl);
 
         movieRepository.save(movie);
+
+        return movieMapper.entityToDao(movie);
     }
 }

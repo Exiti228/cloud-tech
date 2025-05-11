@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "user")
+@Table(name = "app_user ")
 public class UserEntity extends BaseObject{
     @Column
     private String login;
