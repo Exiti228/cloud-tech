@@ -1,10 +1,12 @@
 package com.cloud.kinopoisk.dao;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Data
 public class Movie {
+    private String id;
+
     @JsonProperty(value = "poster_url")
     private String posterUrl;
 
