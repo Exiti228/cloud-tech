@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>ФильмБаза — Авторизация</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <h1 class="mainTitle">ФильмБаза</h1>
+
+  <div class="authContainer">
+    <section class="authSection">
+      <h2 class="sectionTitle">Регистрация</h2>
+      <form id="registerForm" class="authForm">
+        <input type="text" id="registerLogin" placeholder="Логин" required>
+        <input type="password" id="registerPassword" placeholder="Пароль" required />
+        <button type="submit" class="blueButton">Создать пользователя</button>
+      </form>
+      <p id="registerResult" class="infoText"></p>
+    </section>
+
+    <section class="authSection">
+      <h2 class="sectionTitle">Вход</h2>
+      <form id="loginForm" class="authForm">
+        <input type="text" id="login" placeholder="Логин" required>
+        <input type="password" id="password" placeholder="Пароль" required>
+        <button type="submit" class="blueButton">Войти</button>
+      </form>
+      <p id="loginResult" class="infoText"></p>
+    </section>
+  </div>
+
+  <script src="js/auth.js"></script>
+</body>
+</html>

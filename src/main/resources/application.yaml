@@ -27,5 +27,6 @@ management:
       show-details: always
 minio:
   url: ${MINIO_URL}
+  public-url: ${MINIO_PUBLIC_URL}
   login: ${MINIO_LOGIN}
   password: ${MINIO_PASSWORD}

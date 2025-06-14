@@ -1,0 +1,253 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #e7e7e7;
+  padding: 20px;
+  color: #292828;
+}
+
+
+.mainTitle {
+  text-align: center;
+  font-weight: 700;
+}
+
+.authContainer {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.authSection {
+  margin-bottom: 30px;
+}
+
+.authForm input {
+  width: 90%;
+  margin: 8px 0;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.blueButton {
+  padding: 10px 16px;
+  font-size: 14px;
+  background: #347ae2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s ease;
+}
+
+.blueButton:hover {
+  background: #195fc4;
+}
+
+.infoText {
+  font-style: italic;
+  font-size: 13px;
+  margin-top: 5px;
+  color: #444;
+}
+
+.authSection h2 {
+  margin-bottom: 5px;
+}
+
+
+#userBlock {
+  margin-bottom: 20px;
+}
+
+#controls {
+  margin-bottom: 20px;
+}
+
+#filters {
+  margin-bottom: 10px;
+}
+
+#filters button {
+  margin-right: 6px;
+  padding: 8px 14px;
+  background-color: #347ae2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#filters button:hover {
+  background-color: #195fc4;
+}
+
+#filters button.active {
+  background-color: #195fc4;
+}
+
+#search {
+  margin-top: 10px;
+  padding: 8px;
+  width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+#count {
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+#movieList {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+  gap: 50px;
+}
+
+.movieCard {
+  max-width: 500px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.movieCardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 65%;
+}
+
+
+.movieCard img {
+  max-width: 120px;
+  border-radius: 6px;
+  margin-left: 20px;
+}
+
+.movieCard button {
+  margin-top: 8px;
+  background-color: #347ae2;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.movieCard button:hover {
+  background-color: #195fc4;
+}
+
+#pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  gap: 6px;
+}
+
+.pageButton {
+  margin-right: 5px;
+  padding: 8px 13px;
+  border: none;
+  border-radius: 4px;
+  background: #347ae2;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.pageButton.active {
+  background: #195fc4;
+}
+
+#openAdmin {
+  margin-top: 20px;
+  background-color: #347ae2;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#openAdmin:hover {
+  background-color: #195fc4;
+}
+
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.modalContent {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  position: relative;
+}
+
+#adminModal input,
+#adminModal button {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+#adminModal input[type="file"] {
+  padding: 4px;
+}
+
+#movieForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+#adminSearch {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.close {
+  position: absolute;
+  top: 10px; right: 15px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}

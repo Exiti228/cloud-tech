@@ -31,47 +31,54 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MovieController {
     private final MovieService movieService;
-
     private final MinioService minioService;
-
     private final UserMovieService userMovieService;
 
     @Operation(summary = "Добавить фильм", description = "Позволяет добавить фильм в базу данных")
     @PostMapping
-    public Movie addMovie(@Valid @RequestBody AddMovie addMovie,
-                          @RequestParam(required = false, defaultValue = "pap-s3-storage") @Parameter(description = "Название бакета, куда надо сохранить", example = "pap-s3-storage") String bucket) {
-        String posterUrl  = minioService.downloadPoster(addMovie.getPoster(), bucket);
+    public Movie addMovie(@Valid @RequestBody AddMovie addMovie) {
+        String bucket = "film-poster-base";
+        String posterUrl = minioService.downloadPoster(addMovie.getPoster(), bucket);
         return movieService.handleAddMovie(addMovie, posterUrl);
     }
 
-    @Operation(summary = "Получить весь список фильмов", description = "Позволяет получить список фильмов")
+    @Operation(summary = "Получить весь список фильмов", description = "Позволяет получить список фильмов с учетом просмотра")
     @GetMapping
-    public List<Movie> getAllMovies() {
-        return movieService.handleGetAllMovies();
+    public List<Movie> getAllMovies(
+            @RequestParam @Parameter(required = true, description = "UUID пользователя") String userId
+    ) {
+        return movieService.handleGetAllMovies(userId);
     }
 
-    @Operation(summary = "Получить фильм", description = "Позволяет получить фильм")
-    @GetMapping(value = "/{id}")
-    public Movie getMovie(@PathVariable @Parameter(required = true, description = "UUID фильма для получения", example = "9ba48d0b-843d-4a21-981f-3ec9c163e88d") String id) {
-        return movieService.handleGetMovie(id);
+    @Operation(summary = "Получить фильм", description = "Позволяет получить фильм с флагом isWatched")
+    @GetMapping("/{id}")
+    public Movie getMovie(
+            @PathVariable @Parameter(required = true, description = "UUID фильма", example = "9ba48d0b-843d-4a21-981f-3ec9c163e88d") String id,
+            @RequestParam @Parameter(required = true, description = "UUID пользователя") String userId
+    ) {
+        return movieService.handleGetMovie(userId, id);
     }
 
     @Operation(summary = "Удалить фильм", description = "Позволяет удалить фильм")
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMovie(@PathVariable @Parameter(required = true, description = "UUID фильма для удаления", example = "9ba48d0b-843d-4a21-981f-3ec9c163e88d") String id) {
+    public void deleteMovie(
+            @PathVariable @Parameter(required = true, description = "UUID фильма для удаления") String id
+    ) {
         movieService.handleDeleteMovie(id);
     }
 
     @Operation(summary = "Изменить данные о фильме", description = "Позволяет изменить данные о фильме")
-    @PutMapping(value = "/{id}")
-    public void putMovie(@RequestBody PutMovie putMovie,
-                         @PathVariable @Parameter(required = true, description = "UUID фильма для изменения", example = "9ba48d0b-843d-4a21-981f-3ec9c163e88d") String id,
-                         @RequestParam(required = false, defaultValue = "pap-s3-storage") @Parameter(description = "Название бакета, куда надо сохранить новый фильм, если он есть", example = "pap-s3-storage") String bucket) {
+    @PutMapping("/{id}")
+    public void putMovie(
+            @RequestBody PutMovie putMovie,
+            @PathVariable @Parameter(required = true, description = "UUID фильма для изменения") String id
+    ) {
+        String bucket = "film-poster-base";
         movieService.handlePutMovie(putMovie, id, bucket);
     }
 
-    @Operation(summary = "Выставить информацию о просмотренном фильме для переданного пользователя", description = "Позволяет выставить информацию о просмотренном фильме для переданного пользователя")
+    @Operation(summary = "Отметить фильм как просмотренный", description = "Позволяет выставить флаг isWatched = true")
     @PutMapping
     public void postMovieIsWatched(@Valid @RequestBody AddWatched addWatched) {
         userMovieService.handleIsWatched(addWatched);

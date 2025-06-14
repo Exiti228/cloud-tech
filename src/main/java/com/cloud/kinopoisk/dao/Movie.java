@@ -11,6 +11,8 @@ public class Movie {
     private String posterUrl;
 
     private String title;
+    private String author;
 
-    private String rating;
+    @JsonProperty("isWatched")
+    private Boolean isWatched;
 }
