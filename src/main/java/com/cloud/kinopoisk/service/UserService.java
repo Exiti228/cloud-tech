@@ -11,8 +11,10 @@ import com.cloud.kinopoisk.mapper.UserMapper;
 import com.cloud.kinopoisk.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -21,17 +23,17 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-
     private final UserMapper userMapper;
 
     @Transactional
     public User handleAddUser(AddUser addUser) {
+        if (userRepository.findByLogin(addUser.getLogin()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Пользователь с таким логином уже существует");
+        }
+
         UserEntity user = userMapper.dtoToEntity(addUser);
-
         user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
-
         userRepository.save(user);
-
         return userMapper.entityToDao(user);
     }
 
@@ -62,9 +64,13 @@ public class UserService {
 
     @Transactional
     public User compareUser(LoginUser loginUser) {
-        UserEntity user = userRepository.findByLoginAndPassword(loginUser.getLogin(), BCrypt.hashpw(loginUser.getPassword(), BCrypt.gensalt()))
-                .orElseThrow(() -> new UserDataNotMatchedException("Данные пользователя не совпадают"));
+        UserEntity user = userRepository.findByLogin(loginUser.getLogin())
+                .orElseThrow(() -> new UserDataNotMatchedException("Пользователь не найден"));
 
-        return new User(user.getId().toString());
+        if (!BCrypt.checkpw(loginUser.getPassword(), user.getPassword())) {
+            throw new UserDataNotMatchedException("Неверный пароль");
+        }
+
+        return new User(user.getId().toString(), user.getLogin());
     }
 }

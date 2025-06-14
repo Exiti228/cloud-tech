@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>ФильмБаза — фильмы</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <h1 class="mainTitle">ФильмБаза</h1>
+
+  <div id="userBlock">
+    <span>Вы вошли как: <strong id="user-id"></strong></span>
+    <button id="logout" class="blueButton">Выйти</button>
+    <button id="delete-user" class="blueButton">Удалить профиль</button>
+  </div>
+
+  <div id="controls">
+    <div id="filters">
+      <button data-filter="all" class="blueButton active">Все</button>
+      <button data-filter="watched" class="blueButton">Просмотрено</button>
+      <button data-filter="unwatched" class="blueButton">Не просмотрено</button>
+    </div>
+
+    <input type="hidden" id="filter" value="all">
+    <input type="text" id="search" placeholder="Поиск фильма..." />
+    <p id="count">Всего фильмов: 0</p>
+  </div>
+
+  <div id="movieList"></div>
+
+  <div id="pagination"></div>
+
+  <button id="openAdmin" class="blueButton">Управление фильмами</button>
+
+  <div id="adminModal" class="modal hidden">
+    <div class="modalContent">
+      <span id="closeAdmin" class="close">&times;</span>
+      <h2>Управление фильмами</h2>
+
+      <input id="adminSearch" placeholder="Найти фильм по названию" />
+
+      <form id="movieForm">
+        <input id="movieTitle" placeholder="Название" required />
+        <input id="movieAuthor" placeholder="Режиссер" required />
+        <input id="moviePoster" type="file" accept="image/*" />
+        <button type="submit" class="blueButton">Сохранить</button>
+        <button type="button" id="deleteMovie" class="blueButton">Удалить</button>
+      </form>
+
+      <div id="adminMessage" class="infoText"></div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
