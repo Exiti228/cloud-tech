@@ -12,5 +12,6 @@ spring:
     show-sql: true
 minio:
   url: http://localhost:9000
+  public-url: http://localhost:9000
   login: minioadmin
   password: minioadmin

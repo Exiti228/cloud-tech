@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final UserService userService;
 
-    @PostMapping("/login")
+    @PostMapping(value = "/login")
     public User login(@Valid @RequestBody LoginUser loginUser) {
         return userService.compareUser(loginUser);
     }

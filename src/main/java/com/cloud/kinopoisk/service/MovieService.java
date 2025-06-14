@@ -31,16 +31,20 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MovieService {
     private final MovieRepository movieRepository;
+
     private final UserRepository userRepository;
+
     private final UserMovieRepository userMovieRepository;
+
     private final MovieMapper movieMapper;
+
     private final MinioService minioService;
 
     @Transactional
     public List<Movie> handleGetAllMovies(String userId) {
         UUID userUUID = UUID.fromString(userId);
 
-        List<UserMovieEntity> userMovies = userMovieRepository.findAllByUser_Id(userUUID);
+        List<UserMovieEntity> userMovies = userMovieRepository.findAllByUserId(userUUID);
 
         Map<UUID, Boolean> watchedMap = userMovies.stream()
                 .collect(Collectors.toMap(
@@ -114,7 +118,7 @@ public class MovieService {
         Optional.ofNullable(putMovie).map(PutMovie::getAuthor).ifPresent(movie::setAuthor);
         Optional.ofNullable(putMovie).map(PutMovie::getTitle).ifPresent(movie::setTitle);
 
-        Optional.ofNullable(putMovie.getPoster()).ifPresent(poster -> {
+        Optional.ofNullable(putMovie).map(PutMovie::getPoster).ifPresent(poster -> {
             String objectName = UUID.randomUUID().toString();
             minioService.handleBucketExists(bucket);
             minioService.uploadFile(bucket, objectName, poster);

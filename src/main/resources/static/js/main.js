@@ -132,7 +132,7 @@ function renderMovies(movies) {
         <p>Просмотрено: ${movie.isWatched ? 'Да' : 'Нет'}</p>
         ${!movie.isWatched ? `<button onclick="markAsWatched('${movie.id}')">Смотрел</button>` : ''}
       </div>
-      ${movie.poster_url ? `<img src="${movie.poster_url}" alt="Постер">` : ''}
+      ${movie.posterUrl ? `<img src="${movie.posterUrl}" alt="Постер">` : ''}
     `
         container.appendChild(card)
     })

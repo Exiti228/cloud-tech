@@ -14,5 +14,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class EnrollmentId implements Serializable {
     private UUID userId;
+
     private UUID movieId;
 }

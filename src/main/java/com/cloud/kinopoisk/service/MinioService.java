@@ -18,11 +18,28 @@ public class MinioService {
     @Value("${minio.public-url}")
     private String minioPublicUrl;
 
+    private final static String FILE_EXT = ".png";
+
+    private final static String BUCKET_POLICY =
+            """
+            {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": "*",
+                  "Action": ["s3:GetObject"],
+                  "Resource": ["arn:aws:s3:::%s/*"]
+                }
+              ]
+            }
+            """;
+
     private final MinioClient minioClient;
 
     @SneakyThrows
     public String downloadPoster(String poster, String bucket) {
-        String objectName = UUID.randomUUID().toString();
+        String objectName = UUID.randomUUID() + FILE_EXT;
 
         handleBucketExists(bucket);
         uploadFile(bucket, objectName, poster);
@@ -35,11 +52,15 @@ public class MinioService {
     @SneakyThrows
     public void handleBucketExists(String bucket) {
         boolean isExistBucket = minioClient.bucketExists(
-                BucketExistsArgs.builder().bucket(bucket).build()
+                BucketExistsArgs.builder()
+                        .bucket(bucket)
+                        .build()
         );
         if (!isExistBucket) {
             minioClient.makeBucket(
-                    MakeBucketArgs.builder().bucket(bucket).build()
+                    MakeBucketArgs.builder()
+                            .bucket(bucket)
+                            .build()
             );
             log.info("Create bucket with name {}", bucket);
 
@@ -48,20 +69,8 @@ public class MinioService {
     }
 
     @SneakyThrows
-    public void setPublicReadPolicy(String bucket) {
-        String policy = """
-            {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Principal": "*",
-                  "Action": ["s3:GetObject"],
-                  "Resource": ["arn:aws:s3:::%s/*"]
-                }
-              ]
-            }
-            """.formatted(bucket);
+    private void setPublicReadPolicy(String bucket) {
+        String policy = BUCKET_POLICY.formatted(bucket);
 
         minioClient.setBucketPolicy(
                 SetBucketPolicyArgs.builder()

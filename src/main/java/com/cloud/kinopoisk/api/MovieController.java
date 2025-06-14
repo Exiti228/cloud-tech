@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +52,7 @@ public class MovieController {
     }
 
     @Operation(summary = "Получить фильм", description = "Позволяет получить фильм с флагом isWatched")
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}")
     public Movie getMovie(
             @PathVariable @Parameter(required = true, description = "UUID фильма", example = "9ba48d0b-843d-4a21-981f-3ec9c163e88d") String id,
             @RequestParam @Parameter(required = true, description = "UUID пользователя") String userId
@@ -60,7 +61,7 @@ public class MovieController {
     }
 
     @Operation(summary = "Удалить фильм", description = "Позволяет удалить фильм")
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMovie(
             @PathVariable @Parameter(required = true, description = "UUID фильма для удаления") String id
@@ -69,7 +70,7 @@ public class MovieController {
     }
 
     @Operation(summary = "Изменить данные о фильме", description = "Позволяет изменить данные о фильме")
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}")
     public void putMovie(
             @RequestBody PutMovie putMovie,
             @PathVariable @Parameter(required = true, description = "UUID фильма для изменения") String id
