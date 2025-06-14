@@ -15,6 +15,7 @@ target/
 
 ### IntelliJ IDEA ###
 .idea
+.gigaide
 *.iws
 *.iml
 *.ipr
@@ -31,3 +32,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### grafana ###
+/grafana
+/prometheus_data
+
+

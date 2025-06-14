@@ -9,11 +9,14 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "user")
+@Table(name = "app_user")
 public class UserEntity extends BaseObject{
     @Column
     private String login;
 
-    @OneToMany(mappedBy = "user")
+    @Column
+    private String password;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserMovieEntity> movies;
 }
