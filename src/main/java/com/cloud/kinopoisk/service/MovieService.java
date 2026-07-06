@@ -22,6 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -38,16 +41,44 @@ public class MovieService {
     private final MinioService minioService;
 
     @Transactional
-    public List<Movie> handleGetAllMovies() {
-        return movieRepository.findAll()
-                .stream().map(movieMapper::entityToDao).toList();
+    public List<Movie> handleGetAllMovies(String userId) {
+        UUID userUUID = UUID.fromString(userId);
+
+        List<UserMovieEntity> userMovies = userMovieRepository.findAllByUserId(userUUID);
+
+        Map<UUID, Boolean> watchedMap = userMovies.stream()
+                .collect(Collectors.toMap(
+                        entry -> entry.getMovie().getId(),
+                        UserMovieEntity::getIsWatched
+                ));
+
+        return movieRepository.findAll().stream()
+                .map(movieEntity -> {
+                    Movie movie = movieMapper.entityToDao(movieEntity);
+                    movie.setIsWatched(watchedMap.getOrDefault(movieEntity.getId(), false));
+                    return movie;
+                })
+                .toList();
     }
 
+
     @Transactional
-    public Movie handleGetMovie(String id) {
-        return movieRepository.findById(UUID.fromString(id))
-                .map(movieMapper::entityToDao)
-                .orElseThrow(() -> new MovieNotFound(String.format("Фильм с id = %s не найден", id)));
+    public Movie handleGetMovie(String userId, String movieId) {
+        UUID userUUID = UUID.fromString(userId);
+        UUID movieUUID = UUID.fromString(movieId);
+
+        MovieEntity movieEntity = movieRepository.findById(movieUUID)
+                .orElseThrow(() -> new MovieNotFound(String.format("Фильм с id = %s не найден", movieId)));
+
+        Movie movie = movieMapper.entityToDao(movieEntity);
+
+        EnrollmentId id = new EnrollmentId(userUUID, movieUUID);
+        boolean watched = userMovieRepository.findById(id)
+                .map(UserMovieEntity::getIsWatched)
+                .orElse(false);
+
+        movie.setIsWatched(watched);
+        return movie;
     }
 
     @Transactional
@@ -63,14 +94,12 @@ public class MovieService {
         UserEntity user = userRepository.findById(UUID.fromString(connectUserAndMovie.getUserId()))
                 .orElseThrow(() -> new UserNotFound(String.format("Пользователь с id = %s не найден", connectUserAndMovie.getUserId())));
 
-        EnrollmentId enrollmentId = new EnrollmentId();
-        enrollmentId.setMovieId(movie.getId());
-        enrollmentId.setUserId(user.getId());
+        EnrollmentId enrollmentId = new EnrollmentId(user.getId(), movie.getId());
 
         UserMovieEntity userMovieEntity = new UserMovieEntity();
         userMovieEntity.setId(enrollmentId);
-        userMovieEntity.setMovie(movie);
         userMovieEntity.setUser(user);
+        userMovieEntity.setMovie(movie);
         userMovieEntity.setIsWatched(false);
 
         userMovieRepository.save(userMovieEntity);
@@ -84,35 +113,29 @@ public class MovieService {
     @Transactional
     public void handlePutMovie(PutMovie putMovie, String id, String bucket) {
         MovieEntity movie = movieRepository.findById(UUID.fromString(id))
-                .orElseThrow(() -> new MovieNotFound(String.format("Фильм с id = %s не найден", id))); // Тут транзакция, от нее не уйти
+                .orElseThrow(() -> new MovieNotFound(String.format("Фильм с id = %s не найден", id)));
 
         Optional.ofNullable(putMovie).map(PutMovie::getAuthor).ifPresent(movie::setAuthor);
-
-        Optional.ofNullable(putMovie).map(PutMovie::getRating).ifPresent(movie::setRating);
-
         Optional.ofNullable(putMovie).map(PutMovie::getTitle).ifPresent(movie::setTitle);
 
         Optional.ofNullable(putMovie).map(PutMovie::getPoster).ifPresent(poster -> {
             String objectName = UUID.randomUUID().toString();
             minioService.handleBucketExists(bucket);
-
-            minioService.uploadFile(bucket, objectName, putMovie.getPoster());
-
-            String posterUrl = minioService.gitFileUrl(bucket, objectName);
-
+            minioService.uploadFile(bucket, objectName, poster);
             minioService.deleteFile(movie.getPosterUrl());
 
+            String posterUrl = minioService.gitFileUrl(bucket, objectName);
             movie.setPosterUrl(posterUrl);
-
         });
+
+        movieRepository.save(movie);
     }
 
     @Transactional
-    public void handleAddMovie(AddMovie addMovie, String posterUrl) {
+    public Movie handleAddMovie(AddMovie addMovie, String posterUrl) {
         MovieEntity movie = movieMapper.addMovieToEntity(addMovie);
-
         movie.setPosterUrl(posterUrl);
-
         movieRepository.save(movie);
+        return movieMapper.entityToDao(movie);
     }
 }
